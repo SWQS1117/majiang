@@ -1,8 +1,11 @@
 import { _decorator, Component, instantiate, math, Node, NodePool, Prefab, RigidBody, Vec3 } from 'cc';
+import { Mj_Prefab } from './Mj_Prefab';
+import { Mj_Click } from './Mj_Click';
+
 const { ccclass, property } = _decorator;
 
-@ccclass('NewComponent')
-export class NewComponent extends Component {
+@ccclass('MJ_Into')
+export class MJ_Into extends Component {
     //麻将初始化脚本
 
     //节点池：NodePool  
@@ -24,8 +27,8 @@ export class NewComponent extends Component {
     }
 
     Run_Into() {  //初始化函数
-        let Number = 60; //生成麻将总数
-        let Group = 20; //生成麻将的组数
+        let Number = 90; //生成麻将总数
+        let Group = 30; //生成麻将的组数
         let Class = 42; //生成麻将类型数量
         this.Run_ran(Group,Class); // 去随机麻将编号到列表
         this.Run_Pool(Number);  //初始化麻将池
@@ -68,12 +71,14 @@ export class NewComponent extends Component {
             
             if (!number) {   //如果随机列表空了
                 this.unschedule(Send);  //停止循环函数
+                this.node.getComponent(Mj_Click)?.on();  //发牌停止可以点击
                 return;  
             }
 
+
             const node:Node=this.Mj_Nodepool.get()  //从节点池取出一个节点
             node.setParent(this.node);
-            node.getChildByName(String(number)).active=true;
+            node.getComponent(Mj_Prefab).Ran_Node(number);
             let X=Math.cos(Rad)*R  //X坐标（计算弧度和半径）
             let Z=Math.sin(Rad)*R  //Z坐标（计算弧度和半径）
             let Y=1 + H++ / 80    //Y坐标（计算高度，值越小麻将高度越高

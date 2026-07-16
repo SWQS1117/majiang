@@ -5,7 +5,7 @@
   "__editorExtras__": {},
   "_native": "",
   "_friction": 0.1,
-  "_rollingFriction": 0,
-  "_spinningFriction": 0,
+  "_rollingFriction": 0.4,
+  "_spinningFriction": 0.5,
   "_restitution": 0.2
 }
