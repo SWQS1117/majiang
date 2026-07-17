@@ -1,5 +1,6 @@
 import { _decorator, BoxCollider, Camera, Component, EventTouch, geometry, Input, input, Node, PhysicsSystem, RigidBody, Vec3 } from 'cc';
 import { Mj_Prefab } from './Mj_Prefab';
+import { Shot } from './Shot';
 const { ccclass, property } = _decorator;
 
 @ccclass('Mj_Click')
@@ -42,7 +43,7 @@ export class Mj_Click extends Component {
         input.on(Input.EventType.TOUCH_END,this.TOUCH_END,this)
 
     }
-    off(){
+    off(){ 
         input.off(Input.EventType.TOUCH_END,this.TOUCH_END,this)
     }
 
@@ -63,13 +64,15 @@ export class Mj_Click extends Component {
         node.getComponent(RigidBody).enabled=false;
         node.getComponent(BoxCollider).enabled=false;
         node.getComponent(Mj_Prefab).UI_3Dto2D();
-        let Pos_3D=node.getWorldPosition();
-        let Pos_2D=this.c.convertToUINode(Pos_3D,this.Mj_2D)
+        let Pos_3D=node.getWorldPosition();   //麻将当前的3D世界坐标
+        let Pos_2D=this.c.convertToUINode(Pos_3D,this.Mj_2D)  //转成在UI父节点下的2D坐标
 
         node.setParent(this.Mj_2D) //先设置父节点
         node.setPosition(Pos_2D) //再设置2D麻将坐标
         node.setScale(102,102,102) //设置缩放
         node.eulerAngles=new Vec3(90,0,0) //设置旋转
+
+        this.node.getComponent(Shot).Get_Node(node) //传入节点到卡槽
 
     }
     protected onDestroy(): void {
