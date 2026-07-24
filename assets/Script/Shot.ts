@@ -2,6 +2,8 @@ import { _decorator, Component, Node, tween, Vec3 } from 'cc';
 import { Mj_Prefab } from './Mj_Prefab';
 import { MJ_Into } from './Mj_Into';
 import { Mj_Click } from './Mj_Click';
+import { Shot_MAX } from './Shot_MAX';
+import { UI } from './UI';
 const { ccclass, property } = _decorator;
 
 @ccclass('Shot')
@@ -9,23 +11,30 @@ export class Shot extends Component {
 
     Mj_2DList = []  //2D麻将节点列表
 
+    @property(Node)  //导入消除动画节点
+    Boom:Node=null
+
+    pos=null  //动画节点位置
+
     Get_Node(node){
         this.Set_Order(node)  // 先把牌插入到正确的位置
         this.node.getComponent(Mj_Click).off() //关闭监听
         this.Run_Order()      // 再重新排列所有牌
-        this.schedule(()=>{this.Clear_OK(this.Run_Clear(node))},0.1)
+        this.schedule(()=>{this.Clear_OK(this.Run_Clear(node))},0.1) //消除判断
         
     }
 
-    Clear_OK(x){
+    Clear_OK(x){  //取消回调函数
         if (x==1) {
            this.node.getComponent(Mj_Click).on() 
         }
         else if(x==2){
-            this.node.getComponent(Mj_Click).on() 
+            this.node.getComponent(Shot_MAX).Max(this.Mj_2DList.length)
         }
-        else if(x==3){
-            this.node.getComponent(Mj_Click).on() 
+        else if(x==3){  //消除了麻将
+            this.Clear_Boom()
+            this.Run_Order() //重新排列
+            this.node.getComponent(UI).Up_Number()
         }
     }
     //设置排列顺序
@@ -61,12 +70,12 @@ export class Shot extends Component {
 
     Run_Clear(node:Node){ //消除函数
         if (this.Mj_2DList.length<3) { return 1  }  //如果卡槽没有3个麻将
+        
         let  lie =[]  //创建临时空列表 存放相同麻将节点
         const num =node.getComponent(Mj_Prefab).Num  //获取新麻将编号
         for (let X of this.Mj_2DList) {  //遍历卡槽列表
             if (num==X.getComponent(Mj_Prefab).Num) {
                 lie.push(X)
-
             }
         }
         if (lie.length<3) {return 2 } 
@@ -76,10 +85,26 @@ export class Shot extends Component {
             this.Mj_2DList=this.Mj_2DList.filter(itme =>itme!==x) //卡槽列表删除
             
         }
-        this.Run_Order() //重新排列
+        this.pos=lie[1].position  //获取消除中间麻将位置
         return 3
     }
    
+    Clear_Boom(){
+        let s =0.1  //初始缩放
+        this.Boom.setPosition(this.pos)  //定位坐标
+        this.Boom.setScale(1,1,1)  //设置缩放
+        this.Boom.active=true  //显示动画节点
+        const boom=()=>{  //动画执行内部函数
+            s+=0.1 
+            this.Boom.setScale(1,1,1)
+            if (s>=0.3) {
+                this.Boom.active=false
+                this.unschedule(boom)
+            }
+        }
+
+        this.schedule(boom,0.01)
+    }
     
 }
 

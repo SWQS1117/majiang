@@ -1,6 +1,8 @@
 import { _decorator, Component, instantiate, math, Node, NodePool, Prefab, RigidBody, Vec3 } from 'cc';
 import { Mj_Prefab } from './Mj_Prefab';
 import { Mj_Click } from './Mj_Click';
+import { Get_Data } from './Get_Data';
+import { UI } from './UI';
 
 const { ccclass, property } = _decorator;
 
@@ -27,9 +29,10 @@ export class MJ_Into extends Component {
     }
 
     Run_Into() {  //初始化函数
-        let Number = 90; //生成麻将总数
-        let Group = 30; //生成麻将的组数
-        let Class = 42; //生成麻将类型数量
+        let Number = this.node.getComponent(Get_Data).Number; //生成麻将总数
+        let Group = this.node.getComponent(Get_Data).Group; //生成麻将的组数
+        let Class = this.node.getComponent(Get_Data).Class; //生成麻将类型数量
+        this.node.getComponent(UI).Init()
         this.Run_ran(Group,Class); // 去随机麻将编号到列表
         this.Run_Pool(Number);  //初始化麻将池
         this.Run_Send(this.Mj_Ran);  //初始化麻将发牌
